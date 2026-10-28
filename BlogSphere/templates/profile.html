@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ profile.username }} · BlogSphere{% endblock %}
+{% block content %}
+<section class="profile-header">
+  <div class="avatar avatar-profile">{{ profile.username[0]|upper }}</div>
+  <div class="profile-intro">
+    <span class="eyebrow">PUBLIC PROFILE</span>
+    <h1>{{ profile.username }}</h1>
+    <div class="profile-stats">
+      <span><strong>{{ posts|length }}</strong> {{ 'story' if posts|length == 1 else 'stories' }}</span>
+      <span><strong>{{ follower_count }}</strong> {{ 'follower' if follower_count == 1 else 'followers' }}</span>
+      <span><strong>{{ following_count }}</strong> following</span>
+    </div>
+  </div>
+  {% if current_username and current_username != profile.username %}
+    {% if is_following %}
+      <form method="post" action="{{ url_for('unfollow_user', username=profile.username) }}">
+        <button class="button button-outline" type="submit">Following · Unfollow</button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('follow_user', username=profile.username) }}">
+        <button class="button" type="submit">Follow</button>
+      </form>
+    {% endif %}
+  {% elif not current_username %}
+    <a class="button" href="{{ url_for('login') }}">Log in to follow</a>
+  {% endif %}
+</section>
+
+<section class="section-heading">
+  <div><span class="eyebrow">SHARED WITH EVERYONE</span><h2>{{ profile.username }}'s stories</h2></div>
+</section>
+
+{% if posts %}
+  <section class="post-grid">
+    {% for post in posts %}
+      <article class="post-card">
+        <div class="card-topline"><span class="category-dot"></span><span>COMMUNITY STORY</span></div>
+        {% if post.image_filename %}
+          <a class="post-image-link" href="{{ url_for('post_detail', post_id=post.id) }}"><img class="post-image" src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" alt="Photo shared in {{ post.title }}"></a>
+        {% endif %}
+        <h3><a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
+        <p class="post-excerpt">{{ post.content|striptags|truncate(150) }}</p>
+        <div class="post-meta">
+          <div class="avatar">{{ profile.username[0]|upper }}</div>
+          <div><strong>{{ profile.username }}</strong><span>{{ post.created_at }}</span></div>
+          <a class="comment-count" href="{{ url_for('post_detail', post_id=post.id) }}">♡ {{ post.comment_count }}</a>
+        </div>
+        <button class="share-button" type="button" data-share-url="{{ url_for('post_detail', post_id=post.id, _external=True) }}" data-share-title="{{ post.title }}">Share story</button>
+      </article>
+    {% endfor %}
+  </section>
+{% else %}
+  <section class="empty-state">
+    <div class="empty-icon">✎</div><h3>No stories yet.</h3>
+    <p>{{ profile.username }} hasn't shared a story yet.</p>
+  </section>
+{% endif %}
+{% endblock %}

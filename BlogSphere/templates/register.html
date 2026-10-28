@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Create account · BlogSphere{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-intro"><span class="eyebrow">MAKE YOURSELF HEARD</span><h1>Every great story begins with a first word.</h1><p>Create your account and share your perspective with the world.</p></div>
+  <form class="form-card" method="post">
+    <h2>Create an account</h2><p class="muted">It only takes a minute.</p>
+    <label for="username">Username</label><input id="username" name="username" type="text" minlength="2" maxlength="40" autocomplete="username" required>
+    <label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required>
+    <label for="password">Password</label><input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+    <small class="field-help">Use at least 8 characters.</small>
+    <button class="button button-full" type="submit">Create account</button>
+    <p class="form-foot">Already a member? <a href="{{ url_for('login') }}">Log in</a></p>
+  </form>
+</section>
+{% endblock %}

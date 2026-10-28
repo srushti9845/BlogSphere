@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} · BlogSphere{% endblock %}
+{% block content %}
+<article class="article">
+  <a class="back-link" href="{{ url_for('index') }}">← Back to stories</a>
+  <div class="article-header"><span class="eyebrow">COMMUNITY STORY</span><h1>{{ post.title }}</h1>
+    <div class="article-byline"><div class="avatar avatar-large">{{ post.username[0]|upper }}</div><div><strong><a href="{{ url_for('profile', username=post.username) }}">{{ post.username }}</a></strong><span>{{ post.created_at }}</span></div></div>
+  </div>
+  {% if post.image_filename %}
+    <img class="story-image" src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" alt="Photo shared in {{ post.title }}">
+  {% endif %}
+  <div class="article-body">{{ post.content|link_mentions }}</div>
+  <div class="article-share"><button class="button button-outline button-small" type="button" data-share-url="{{ url_for('post_detail', post_id=post.id, _external=True) }}" data-share-title="{{ post.title }}">Share this story</button></div>
+  {% if current_username and session.get('user_id') == post.user_id %}
+    <div class="owner-actions"><a class="button button-outline button-small" href="{{ url_for('edit_post', post_id=post.id) }}">Edit story</a>
+      <form method="post" action="{{ url_for('delete_post', post_id=post.id) }}" data-confirm="Delete this story permanently?"><button class="button button-danger button-small" type="submit">Delete story</button></form>
+    </div>
+  {% endif %}
+  <section class="comments-section">
+    <div class="section-heading"><div><span class="eyebrow">JOIN THE CONVERSATION</span><h2>Comments ({{ comments|length }})</h2></div></div>
+    {% if current_username %}
+      <form class="comment-form" method="post" action="{{ url_for('add_comment', post_id=post.id) }}">
+        <label for="comment">Add your thoughts</label><textarea id="comment" name="content" rows="3" maxlength="2000" placeholder="Write a thoughtful comment..." required></textarea>
+        <div class="comment-submit"><button class="button" type="submit">Post comment →</button></div>
+      </form>
+    {% else %}
+      <div class="login-prompt"><p>Want to join the conversation?</p><a href="{{ url_for('login') }}">Log in</a> or <a href="{{ url_for('register') }}">create an account</a> to comment.
+      </div>
+    {% endif %}
+    <div class="comment-list">
+      {% for comment in comments %}
+        <article class="comment"><div class="avatar">{{ comment.username[0]|upper }}</div><div class="comment-content"><div class="comment-heading"><strong>{{ comment.username }}</strong><span>{{ comment.created_at }}</span></div><p>{{ comment.content }}</p></div></article>
+      {% else %}
+        <div class="no-comments">No comments yet. Be the first to share a thought.</div>
+      {% endfor %}
+    </div>
+  </section>
+</article>
+{% endblock %}

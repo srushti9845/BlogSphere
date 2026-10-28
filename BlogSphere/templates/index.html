@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Explore · BlogSphere{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow">A SPACE FOR YOUR IDEAS</span>
+    <h1>Stories worth<br><span class="accent">sharing.</span></h1>
+    <p>Discover fresh perspectives, share what you know, and join thoughtful conversations.</p>
+    {% if current_username %}
+      <a class="button" href="{{ url_for('create_post') }}">Write your first story <span aria-hidden="true">→</span></a>
+    {% else %}
+      <a class="button" href="{{ url_for('register') }}">Start writing <span aria-hidden="true">→</span></a>
+    {% endif %}
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+    <div class="art-note note-one">✦</div><div class="art-note note-two">✎</div>
+    <div class="art-card"><span class="art-line"></span><span class="art-line short"></span><span class="art-line"></span><span class="art-line medium"></span><div class="art-dot"></div></div>
+  </div>
+</section>
+
+<section class="section-heading">
+  <div><span class="eyebrow">THE COMMUNITY</span><h2>Latest stories</h2></div>
+  <span class="muted">{{ posts|length }} {{ 'story' if posts|length == 1 else 'stories' }}</span>
+</section>
+
+{% if posts %}
+  <section class="post-grid">
+    {% for post in posts %}
+      <article class="post-card">
+        <div class="card-topline"><span class="category-dot"></span><span>COMMUNITY STORY</span></div>
+        {% if post.image_filename %}
+          <a class="post-image-link" href="{{ url_for('post_detail', post_id=post.id) }}"><img class="post-image" src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" alt="Photo shared in {{ post.title }}"></a>
+        {% endif %}
+        <h3><a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
+        <p class="post-excerpt">{{ post.content|striptags|truncate(150) }}</p>
+        <div class="post-meta">
+          <div class="avatar">{{ post.username[0]|upper }}</div>
+          <div><strong><a href="{{ url_for('profile', username=post.username) }}">{{ post.username }}</a></strong><span>{{ post.created_at }}</span></div>
+          <a class="comment-count" href="{{ url_for('post_detail', post_id=post.id) }}">♡ {{ post.comment_count }}</a>
+        </div>
+        <button class="share-button" type="button" data-share-url="{{ url_for('post_detail', post_id=post.id, _external=True) }}" data-share-title="{{ post.title }}">Share story</button>
+      </article>
+    {% endfor %}
+  </section>
+{% else %}
+  <section class="empty-state">
+    <div class="empty-icon">✎</div><h3>Your reading list starts here.</h3>
+    <p>There are no stories yet. Be the first to share an idea with the community.</p>
+    <a class="button" href="{{ url_for('create_post') if current_username else url_for('register') }}">Create a story</a>
+  </section>
+{% endif %}
+{% endblock %}

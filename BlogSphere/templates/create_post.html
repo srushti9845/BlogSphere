@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit story' if post else 'Write a story' }} · BlogSphere{% endblock %}
+{% block content %}
+<section class="editor-layout">
+  <span class="eyebrow">YOUR WORDS, YOUR SPACE</span>
+  <h1>{{ 'Edit your story' if post else 'Write a new story' }}</h1>
+  <p class="muted">Good stories don't need to be perfect. They just need to begin.</p>
+  <form class="editor-form" method="post" enctype="multipart/form-data">
+    <label for="title">Story title</label>
+    <input id="title" name="title" type="text" maxlength="180" placeholder="Give your story a title..." value="{{ post.title if post else '' }}" required>
+    <label for="content">Your story</label>
+    <textarea id="content" name="content" rows="14" placeholder="What would you like to share?" required>{{ post.content if post else '' }}</textarea>
+    <small class="field-help">Tag people by including their username like @alex in your story.</small>
+    {% if post and post.image_filename %}
+      <div class="current-image">
+        <img src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" alt="Current photo attached to this story">
+        <label class="remove-image"><input type="checkbox" name="remove_image" value="yes"> Remove current photo</label>
+      </div>
+    {% endif %}
+    <label for="image">{{ 'Replace photo' if post and post.image_filename else 'Add a photo (optional)' }}</label>
+    <input id="image" name="image" type="file" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp">
+    <small class="field-help">JPG, PNG, GIF, or WebP. Maximum file size: 5 MB.</small>
+    <div class="editor-actions"><a class="button button-outline" href="{{ url_for('index') }}">Cancel</a><button class="button" type="submit">{{ 'Save changes' if post else 'Publish story' }} →</button></div>
+  </form>
+</section>
+{% endblock %}
